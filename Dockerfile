@@ -88,13 +88,14 @@ RUN docker-php-ext-install -j$(nproc) ldap
 COPY files/composer_install.sh /composer.sh
 RUN chmod a+x /composer.sh && \
     /composer.sh  && \
-    mv composer.phar /usr/local/bin/composer && \
-    rm -f /composer.sh
+    mv composer.phar /usr/local/bin/composer
 
 RUN apt-get clean && \
     apt-get autoclean && \
     apt-get autoremove
 RUN rm -r /var/lib/apt/lists/*
+
+RUN rm -f /composer.sh
 
 COPY files/apache.j2  /templates/apache.j2
 COPY files/msmtprc.j2 /templates/msmtprc.j2
