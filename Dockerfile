@@ -5,6 +5,7 @@ MAINTAINER Martin Winter
 ENV TERM xterm
 ENV DEBIAN_FRONTEND noninteractive
 ENV WORKINGUSER www-data
+ENV WORKINGDIR /var/www/html
 
 # expose ports
 EXPOSE 80
