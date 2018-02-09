@@ -17,7 +17,7 @@ composer install --prefer-dist
 npm install
 npm run build
 
-if [ -f $WORKINGDIR/config/config.json ]; then
+if [ ! -f $WORKINGDIR/config/config.json ]; then
     touch $WORKINGDIR/config/INSTALLING
 fi
 
