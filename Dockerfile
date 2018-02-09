@@ -5,6 +5,7 @@ MAINTAINER Martin Winter
 ENV TERM xterm
 ENV DEBIAN_FRONTEND noninteractive
 ENV WORKINGUSER www-data
+ENV WORKINGGROUP www-data
 ENV WORKINGDIR /var/www/html
 
 # expose ports
@@ -98,6 +99,7 @@ RUN rm -r /var/lib/apt/lists/*
 
 # clone current git repo of Antragsgrün
 RUN git clone https://github.com/CatoTH/antragsgruen.git $WORKINGDIR
+RUN chown $WORKINGUSER:$WORKINGGROUP $WORKINGDIR/..
 
 # copy template files
 COPY files/apache.j2  /templates/apache.j2

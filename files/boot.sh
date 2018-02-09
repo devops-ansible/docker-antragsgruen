@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ -z ${WORKINGDIR+x} ]; then WORKINGDIR="/var/www/html"; export WORKINGDIR; fi
-if [ -z ${WORKINGUSER+x} ]; then WORKINGUSER="www-data"; export WORKINGUSER; fi
-if [ -z ${WORKINGGROUP+x} ]; then WORKINGGROUP="www-data"; export WORKINGGROUP; fi
-
 if [ -z ${WWW_UID+x} ]; then WWW_UID="$(id -u $WORKINGUSER)"; export WWW_UID; fi
 if [ -z ${WWW_GID+x} ]; then WWW_GID="$(id -g $WORKINGGROUP)"; export WWW_GID; fi
 
