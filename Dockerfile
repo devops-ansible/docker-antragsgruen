@@ -86,23 +86,24 @@ RUN docker-php-ext-install -j$(nproc) ldap
 
 # install composer
 COPY files/composer_install.sh /composer.sh
-RUN chmod a+x /composer.sh && \
-    /composer.sh  && \
-    mv composer.phar /usr/local/bin/composer
+RUN chmod a+x /composer.sh
+RUN /composer.sh
+RUN mv composer.phar /usr/local/bin/composer
+RUN rm -f /composer.sh
 
 RUN apt-get clean && \
     apt-get autoclean && \
     apt-get autoremove
 RUN rm -r /var/lib/apt/lists/*
 
-RUN rm -f /composer.sh
+# clone current git repo of Antragsgrün
+RUN git clone https://github.com/CatoTH/antragsgruen.git $WORKINGDIR
 
+# copy template files
 COPY files/apache.j2  /templates/apache.j2
 COPY files/msmtprc.j2 /templates/msmtprc.j2
 
-RUN git clone https://github.com/CatoTH/antragsgruen.git $WORKINGDIR
-
-# copy files
+#copy script files
 COPY files/boot.sh /boot.sh
 RUN chmod a+x /boot.sh
 
