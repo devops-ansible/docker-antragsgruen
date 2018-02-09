@@ -86,6 +86,7 @@ If you are running Antragsgrün behind a reverse proxy like Træfik (the `docker
 * `zip`
 * `sudo`
 * `ssh`
+* `expect`
 * `msmtp` as small SMTP relay – has to be configured for production systems
 * `msmtp-mta` for using `sendmail` with `msmtp`
 * `nodejs`

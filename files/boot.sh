@@ -15,6 +15,8 @@ sudo -u $WORKINGUSER composer install --prefer-dist
 sudo -u $WORKINGUSER npm install
 sudo -u $WORKINGUSER npm run build
 
-if [ ! -f $WORKINGDIR/config/config.json ]; then
+if [ -f $WORKINGDIR/config/config.json ]; then
+    sudo -u $WORKINGUSER expect -c "spawn $WORKINGDIR/yii migrate; expect -re \"Apply the above migrations?.*\"; send 'yes\r\n';"
+else
     sudo -u $WORKINGUSER touch $WORKINGDIR/config/INSTALLING
 fi

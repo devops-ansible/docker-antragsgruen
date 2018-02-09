@@ -42,6 +42,7 @@ RUN apt-get -yq install -y --no-install-recommends \
         supervisor \
         openssl \
         zip unzip bzip2 \
+        expect \
         ssh \
         sudo \
         g++ \
