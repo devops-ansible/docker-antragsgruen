@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+
+  antragsgruen:
+    image: jugendpresse/antragsgruen:latest
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - SMTP_HOST=mail.example.com
+      - SMTP_PORT=587
+      - SMTP_FROM=motiontool@example.com
+      - SMTP_USER=motiontool@example.com
+      - SMTP_PASS="I'am very Secr3t!"
+      - APACHE_FQDN=motiontool.example.com
+    volumes:
+      - antragsgruen:/var/www/html
+
+  database:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "my-secret-pw"
+      MYSQL_DATABASE: antragsgruen
+    volumes:
+      - antragsgruen_db_c:/etc/mysql/conf.d/
+      - antragsgruen_db_d:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  antragsgruen:
+  antragsgruen_db_c:
+  antragsgruen_db_d:
