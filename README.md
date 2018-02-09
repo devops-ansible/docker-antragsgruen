@@ -9,6 +9,32 @@ Since the docker principles tell you to only run one process within one containe
 
 If you want to reuse an existing database (container), you have to add a database and the credentials manually and remove the database service from `docker-compose.yml`.
 
+Deploying from `docker-compose.yml` works by running the following command:
+
+```sh
+docker-compose up -d
+```
+
+If you've set your Antragsgrün up by `docker-compose.yml`, your container normally is called something like `antragsgruen_antragsgruen_1`.
+
+First start-up (and after updates) will take a while due to installing the used PHP / NodeJS packages. The startup process is done, when the Docker logs show you something like that:
+
+```sh
+$ docker logs -f antragsgruen_antragsgruen_1
+
+# [Fri Feb 09 10:00:00.000000 2018] [core:notice] [pid 1] AH00010: Command line: 'apache2 -D FOREGROUND'
+```
+
+The Hostname of the database, you've created by `docker-compose.yml` is the name of the Docker container and will normally look like `antragsgruen_database_1`.
+
+### When was the image built, I'm using? ###
+
+You can get the build-date of the image of your currently running container by running the following command:
+
+```sh
+docker exec -it antragsgruen_antragsgruen_1 cat /etc/built_at
+```
+
 ### Contribution guidelines ###
 
 This Repo is Creative Commons non Commercial - You can contribute by forking and using pull requests. The team will review them asap.
