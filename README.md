@@ -89,6 +89,9 @@ If you are running Antragsgrün behind a reverse proxy like Træfik (the `docker
 * `expect`
 * `msmtp` as small SMTP relay – has to be configured for production systems
 * `msmtp-mta` for using `sendmail` with `msmtp`
+* `texlive`
+* `texlive-latex-extra` 
+* `texlive-generic-extra`
 * `nodejs`
 * `j2cli` for templating
 * `composer`

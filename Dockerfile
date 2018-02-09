@@ -46,7 +46,8 @@ RUN apt-get -yq install -y --no-install-recommends \
         ssh \
         sudo \
         g++ \
-        msmtp msmtp-mta
+        msmtp msmtp-mta \
+        texlive texlive-latex-extra texlive-generic-extra
 
 RUN apt-get -yq install -y --no-install-recommends \
         git \
