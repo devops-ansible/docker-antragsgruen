@@ -1,0 +1,14 @@
+account default
+
+host     {{ SMTP_HOST }}
+port     {{ SMTP_PORT | default('587') }}
+from     {{ SMTP_FROM }}
+user     {{ SMTP_USER | default(SMTP_FROM) }}
+password {{ SMTP_PASS }}
+
+{% if SMTP_TLS is defined %}
+tls            on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+{% endif %}
+
+syslog LOG_MAIL
