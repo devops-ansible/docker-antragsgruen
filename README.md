@@ -25,7 +25,8 @@ $ docker logs -f antragsgruen_antragsgruen_1
 # [Fri Feb 09 10:00:00.000000 2018] [core:notice] [pid 1] AH00010: Command line: 'apache2 -D FOREGROUND'
 ```
 
-The Hostname of the database, you've created by `docker-compose.yml` is the name of the Docker container and will normally look like `antragsgruen_database_1`.
+
+The Hostname of the database, you've created by `docker-compose.yml` is the name of the Docker container and will normally look like `antragsgruen_database_1`. Use this hostname during setup!
 
 ### When was the image built, I'm using? ###
 
