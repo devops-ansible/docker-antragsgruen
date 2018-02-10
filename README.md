@@ -44,6 +44,8 @@ This Repo is Creative Commons non Commercial - You can contribute by forking and
 
 The following environmental variables you can edit. There are more of them, but there should be no need to update / change the other ones (as the `www-data` username for Apache runner and the `/var/www/html/` folder as working directory).
 
+Since a Docker container defaults the timezone and therefor the time sync to UTC, one can set the `TIMEZONE` environmental variable i.e. as `TIMEZONE="Europe/Berlin"` to change the container time behavior. `docker-compose.yml` file defaults this to `Europe/Berlin`.
+
 On a non-development setup, Antragsgrün wants to communicate with the users – i.e. `A new motion was created` or `You forgot your password? Here's a new one!` and so on. Therefor the serverside sendmail-equivalent `msmtp` has to be configured and all you've to do is to set the following environmental variables:
 
 * `SMTP_HOST` should be set to your smtp host, i.e. `mail.example.com`
@@ -90,7 +92,7 @@ If you are running Antragsgrün behind a reverse proxy like Træfik (the `docker
 * `msmtp` as small SMTP relay – has to be configured for production systems
 * `msmtp-mta` for using `sendmail` with `msmtp`
 * `texlive`
-* `texlive-latex-extra` 
+* `texlive-latex-extra`
 * `texlive-generic-extra`
 * `nodejs`
 * `j2cli` for templating

@@ -8,6 +8,7 @@ services:
     ports:
       - 8080:80
     environment:
+      - TIMEZONE="Europe/Berlin"
       - SMTP_HOST=mail.example.com
       - SMTP_PORT=587
       - SMTP_FROM=motiontool@example.com
