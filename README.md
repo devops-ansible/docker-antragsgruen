@@ -15,6 +15,8 @@ Deploying from `docker-compose.yml` works by running the following command:
 docker-compose up -d
 ```
 
+![docker-compose up -d](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=500&y=272&a=true&t=hjNHYoU764vyYpB)
+
 If you've set your Antragsgrün up by `docker-compose.yml`, your container normally is called something like `antragsgruen_antragsgruen_1`.
 
 First start-up (and after updates) will take a while due to installing the used PHP / NodeJS packages. The startup process is done, when the Docker logs show you something like that:
@@ -25,8 +27,15 @@ $ docker logs -f antragsgruen_antragsgruen_1
 # [Fri Feb 09 10:00:00.000000 2018] [core:notice] [pid 1] AH00010: Command line: 'apache2 -D FOREGROUND'
 ```
 
+![docker logs -f antragsgruen_antragsgruen_1](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=1315&y=714&a=true&t=aojNWX6rQuTrjDp)
 
-The Hostname of the database, you've created by `docker-compose.yml` is the name of the Docker container and will normally look like `antragsgruen_database_1`. Use this hostname during setup!
+#### Database configuration during setup ####
+
+After the boot process of the main container (probably `antragsgruen_antragsgruen_1`), you normally want to set up your instance of Antragsgrün. The main part here is the connection to the database.
+
+The Hostname of the database, you've created is the name of the Docker container of the database. If you used the `docker-compose.yml` file it will normally look like `antragsgruen_database_1`. Also given by `docker-compose.yml` you'll use the `root` user with the given password – please change it within the `docker-compose.yml` before you'll start your containers!
+
+![Database-Setup](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=1315&y=753&a=true&t=dWK8cjpFgK28WNl)
 
 ### When was the image built, I'm using? ###
 
