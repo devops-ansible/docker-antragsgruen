@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV WORKINGUSER www-data
 ENV WORKINGGROUP www-data
 ENV WORKINGDIR /var/www/html
+ENV GITBRANCH v3.7
 
 # expose ports
 EXPOSE 80
@@ -100,7 +101,7 @@ RUN apt-get clean && \
 RUN rm -r /var/lib/apt/lists/*
 
 # clone current git repo of Antragsgrün
-RUN git clone https://github.com/CatoTH/antragsgruen.git $WORKINGDIR
+RUN git clone https://github.com/CatoTH/antragsgruen.git --branch $GITBRANCH $WORKINGDIR
 RUN chown $WORKINGUSER:$WORKINGGROUP $WORKINGDIR/..
 
 # copy template files
