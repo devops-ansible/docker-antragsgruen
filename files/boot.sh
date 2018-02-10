@@ -1,5 +1,7 @@
 #!/bin/bash
 
+if [ ! -z ${TIMEZONE+x} ]; then echo "$TIMEZONE" > /etc/timezone fi
+
 if [ -z ${WWW_UID+x} ]; then WWW_UID="$(id -u $WORKINGUSER)"; export WWW_UID; fi
 if [ -z ${WWW_GID+x} ]; then WWW_GID="$(id -g $WORKINGGROUP)"; export WWW_GID; fi
 
