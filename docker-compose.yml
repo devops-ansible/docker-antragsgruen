@@ -3,7 +3,7 @@ version: '3'
 services:
 
   antragsgruen:
-    image: jugendpresse/antragsgruen:v3.7
+    image: jugendpresse/docker-antragsgruen:v3.7
     restart: always
     ports:
       - 8080:80
