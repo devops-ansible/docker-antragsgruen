@@ -2,7 +2,7 @@ FROM jugendpresse/apache:php-7.2
 MAINTAINER Martin Winter
 
 # environmental variables
-ENV APACHE_PUBLIC_DIR $WORKINGDIR/web
+ENV APACHE_PUBLIC_DIR $APACHE_WORKDIR/web
 ENV GITBRANCH v3
 
 # expose ports
@@ -26,6 +26,7 @@ RUN rm -r /var/lib/apt/lists/*
 
 # clone current git repo of Antragsgrün
 RUN git clone https://github.com/CatoTH/antragsgruen.git --branch $GITBRANCH ./
+RUN composer install
 
 # declare volume for usage with docker volumes
 VOLUME ["$APACHE_WORKDIR"]
