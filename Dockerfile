@@ -27,6 +27,7 @@ RUN rm -r /var/lib/apt/lists/*
 # clone current git repo of Antragsgrün
 RUN git clone https://github.com/CatoTH/antragsgruen.git --branch $GITBRANCH ./
 RUN composer install
+RUN touch config/INSTALLING
 
 # declare volume for usage with docker volumes
 VOLUME ["$APACHE_WORKDIR"]
