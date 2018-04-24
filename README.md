@@ -29,6 +29,12 @@ $ docker logs -f antragsgruen_antragsgruen_1
 
 ![docker logs -f antragsgruen_antragsgruen_1](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=1315&y=714&a=true&t=aojNWX6rQuTrjDp)
 
+#### Reach the Website ####
+
+Since the default Docker setup via `docker-compose` binds the webservice to port `8080` (`docker-compose.yml`, line 9), you can reach it via http://ip-address:8080 (or if you have bound an URL `domain.tld` to your IP even http://domain.tld:8080).
+
+In my setup, I don't want to use HTTP protocol within public (since it is not encrypted). To use the container via HTTPS protocol, there are two possibilities: you can configure the containers Apache to use certificates and an adjusted Apache2 config file, which all have to be mounted to the container. The alternative is to use a reverse proxy – i.e. [Træfik](https://traefik.io) is able to do what we need and to secure the container with free [Let’s Encrypt](https://letsencrypt.org) Certificates.
+
 #### Database configuration during setup ####
 
 After the boot process of the main container (probably `antragsgruen_antragsgruen_1`), you normally want to set up your instance of Antragsgrün. The main part here is the connection to the database.
@@ -36,14 +42,6 @@ After the boot process of the main container (probably `antragsgruen_antragsgrue
 The Hostname of the database, you've created is the name of the Docker container of the database. If you used the `docker-compose.yml` file it will normally look like `antragsgruen_database_1`. Also given by `docker-compose.yml` you'll use the `root` user with the given password – please change it within the `docker-compose.yml` before you'll start your containers!
 
 ![Database-Setup](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=1315&y=753&a=true&t=dWK8cjpFgK28WNl)
-
-### When was the image built, I'm using? ###
-
-You can get the build-date of the image of your currently running container by running the following command:
-
-```sh
-docker exec -it antragsgruen_antragsgruen_1 cat /etc/built_at
-```
 
 ### Contribution guidelines ###
 
