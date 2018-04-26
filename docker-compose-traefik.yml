@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+
+  antragsgruen:
+    image: jugendpresse/docker-antragsgruen:latest
+    restart: always
+    networks:
+      - proxy
+      - internal
+    labels:
+      - "traefik.frontend.rule=Host:motiontool.example.com"
+      - "traefik.backend=motion tool Antragsgrün"
+      - "traefik.frontend.entryPoints=http,https"
+      - "traefik.port=80"
+      - "traefik.protocol=http"
+      - "traefik.docker.network=proxy"
+    environment:
+      - TIMEZONE="Europe/Berlin"
+      - SMTP_HOST=mail.example.com
+      - SMTP_PORT=587
+      - SMTP_FROM=motiontool@example.com
+      - SMTP_USER=motiontool@example.com
+      - SMTP_PASS="I'am very Secr3t!"
+    volumes:
+      - antragsgruen:/var/www/html
+
+  database:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "my-secret-pw"
+      MYSQL_DATABASE: antragsgruen
+    networks:
+      - internal
+    volumes:
+      - antragsgruen_db_c:/etc/mysql/conf.d/
+      - antragsgruen_db_d:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  traefik:
+    image: traefik
+    command: --api --docker
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8280:8080"
+    networks:
+      - proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/traefik/traefik.toml:/traefik.toml
+      - /srv/traefik/acme.json:/acme.json
+    container_name: traefik
+
+networks:
+  proxy:
+    external: true
+  internal:
+    external: true
+
+volumes:
+  antragsgruen:
+  antragsgruen_db_c:
+  antragsgruen_db_d:

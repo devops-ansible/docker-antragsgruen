@@ -5,15 +5,33 @@
 Within this Repo you will find the Dockerfile and the pipeline configuration to build a running container for the motion tool Antragsgrün.
 
 ### How do I get set up? ###
+
+First things first: **_NEVER_ run the `docker-compose.yml` or the `docker-compose-traefik.yml` without adjustments in production!** You need to adjust it to use your passwords, your domain(s) – even probably you need to define docker networks and other environment specific settings to get the tool running!
+
 Since the docker principles tell you to only run one process within one container, the container provided within this repository, `jugendpresse/antragsgruen`, only provides the php application. You need to setup a MySQL container, too. The `docker-compose.yml` within this repo shows you, how you can set this up.
 
 If you want to reuse an existing database (container), you have to add a database and the credentials manually and remove the database service from `docker-compose.yml`.
 
-Deploying from `docker-compose.yml` works by running the following command:
+You'll need to edit your settings within the `docker-compose.yml` file – i.e. set valid SMTP data to valid email account, declare a strong non-default database password, your domain already pointing to the Docker host, etc.<br/>
+It is best practice to create a copy of the `docker-compose.yml` and adjust the settings within there, so a new git pull will not break:
+
+```sh
+cp -rp docker-compose.yml my-docker-compose.yml
+vim my-docker-compose.yml
+```
+
+Deploying the original `docker-compose.yml` works by running the following command – don't forget to adjust your settings within this file:
 
 ```sh
 docker-compose up -d
 ```
+
+If you've made a copy and changed your settings there, you've to use this command instead:
+
+```sh
+docker-compose -f my-docker-compose.yml up -d
+```
+
 
 ![docker-compose up -d](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=500&y=272&a=true&t=hjNHYoU764vyYpB)
 
@@ -29,11 +47,34 @@ $ docker logs -f antragsgruen_antragsgruen_1
 
 ![docker logs -f antragsgruen_antragsgruen_1](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=1315&y=714&a=true&t=aojNWX6rQuTrjDp)
 
-#### Reach the Website ####
+##### Reach the Website #####
 
 Since the default Docker setup via `docker-compose` binds the webservice to port `8080` (`docker-compose.yml`, line 9), you can reach it via http://ip-address:8080 (or if you have bound an URL `domain.tld` to your IP even http://domain.tld:8080).
 
+#### alternative setup with Træfik as reverse proxy
+
 In my setup, I don't want to use HTTP protocol within public (since it is not encrypted). To use the container via HTTPS protocol, there are two possibilities: you can configure the containers Apache to use certificates and an adjusted Apache2 config file, which all have to be mounted to the container. The alternative is to use a reverse proxy – i.e. [Træfik](https://traefik.io) is able to do what we need and to secure the container with free [Let’s Encrypt](https://letsencrypt.org) Certificates.
+
+Visit [Træfik user guide](https://docs.traefik.io/user-guide/docker-and-lets-encrypt/) for detailed configuration. Please take a copy of `files/traefik.toml` within this repository to `/srv/traefik/traefik.toml` on your Docker host, the default Træfik configuration file – you should at least change `[docker] > domain` and `[acme] > email` to valid values:
+
+```sh
+mkdir -p /srv/traefik
+cp files/traefik.toml /srv/traefik/traefik.toml
+vim /srv/traefik/traefik.toml
+```
+
+After these preparation steps you should take a copy of the `docker-compose-traefik.yml` file and adjust it to your settings, too:
+
+```sh
+cp -rp docker-compose-traefik.yml my-docker-compose-traefik.yml
+vim my-docker-compose-traefik.yml
+```
+
+Then you'll be prepared to run your containers:
+
+```sh
+docker-compose -f my-docker-compose-traefik.yml up -d
+```
 
 #### Database configuration during setup ####
 
