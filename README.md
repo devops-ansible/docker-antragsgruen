@@ -53,6 +53,10 @@ Since the default Docker setup via `docker-compose` binds the webservice to port
 
 #### alternative setup with Træfik as reverse proxy
 
+<aside class="warning">
+    Due to a bug within Antragsgrün, one cannot proceed the installation via https. Therefor you have to configure your app to be reachable through port 80 / https during installation. My advice would be to expose another host-port like 8180 to container-port 80 during installation and afterwards remove the container and build it up without exposed port.
+</aside>
+
 In my setup, I don't want to use HTTP protocol within public (since it is not encrypted). To use the container via HTTPS protocol, there are two possibilities: you can configure the containers Apache to use certificates and an adjusted Apache2 config file, which all have to be mounted to the container. The alternative is to use a reverse proxy – i.e. [Træfik](https://traefik.io) is able to do what we need and to secure the container with free [Let’s Encrypt](https://letsencrypt.org) Certificates.
 
 Visit [Træfik user guide](https://docs.traefik.io/user-guide/docker-and-lets-encrypt/) for detailed configuration. Please take a copy of `files/traefik.toml` within this repository to `/srv/traefik/traefik.toml` on your Docker host, the default Træfik configuration file – you should at least change `[docker] > domain` and `[acme] > email` to valid values:

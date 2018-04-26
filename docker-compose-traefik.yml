@@ -11,7 +11,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8280:8080"
+      - "8080:8080"
     networks:
       - proxy
     volumes:
