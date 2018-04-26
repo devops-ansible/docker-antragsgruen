@@ -1,7 +1,10 @@
+################################################################
+# Global configuration
+################################################################
 debug = false
-
 logLevel = "ERROR"
-defaultEntryPoints = ["https","http"]
+
+defaultEntryPoints = ["http", "https"]
 
 [entryPoints]
   [entryPoints.http]
@@ -10,13 +13,12 @@ defaultEntryPoints = ["https","http"]
     entryPoint = "https"
   [entryPoints.https]
   address = ":443"
-  [entryPoints.https.tls]
+    [entryPoints.https.tls]
 
 [retry]
 
 [docker]
-endpoint = "unix:///var/run/docker.sock"
-domain = "my-awesome-app.org"
+domain = "docker.localhost"
 watch = true
 exposedbydefault = false
 
@@ -26,4 +28,4 @@ storage = "acme.json"
 entryPoint = "https"
 OnHostRule = true
 [acme.httpChallenge]
-entryPoint = "http"
+  entryPoint = "http"

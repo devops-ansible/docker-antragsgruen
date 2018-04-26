@@ -2,6 +2,17 @@ version: '3'
 
 services:
 
+  database:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "my-secret-pw"
+      MYSQL_DATABASE: antragsgruen
+    volumes:
+      - antragsgruen_db_c:/etc/mysql/conf.d/
+      - antragsgruen_db_d:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
   antragsgruen:
     image: jugendpresse/docker-antragsgruen:latest
     restart: always
@@ -17,17 +28,6 @@ services:
       - APACHE_FQDN=motiontool.example.com
     volumes:
       - antragsgruen:/var/www/html
-
-  database:
-    image: mariadb:latest
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: "my-secret-pw"
-      MYSQL_DATABASE: antragsgruen
-    volumes:
-      - antragsgruen_db_c:/etc/mysql/conf.d/
-      - antragsgruen_db_d:/var/lib/mysql
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 volumes:
   antragsgruen:

@@ -2,15 +2,48 @@ version: '3'
 
 services:
 
+  traefik:
+    image: traefik
+    command: --api --docker
+    restart: always
+    labels:
+      - "traefik.enable=false"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8280:8080"
+    networks:
+      - proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/traefik/traefik.toml:/traefik.toml
+      - /srv/traefik/acme.json:/acme.json
+    container_name: traefik
+
+  database:
+    image: mariadb:latest
+    restart: always
+    labels:
+      - "traefik.enable=false"
+    environment:
+      MYSQL_ROOT_PASSWORD: "my-secret-pw"
+      MYSQL_DATABASE: antragsgruen
+    networks:
+      - database
+    volumes:
+      - antragsgruen_db_c:/etc/mysql/conf.d/
+      - antragsgruen_db_d:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
   antragsgruen:
     image: jugendpresse/docker-antragsgruen:latest
     restart: always
     networks:
       - proxy
-      - internal
+      - database
     labels:
       - "traefik.frontend.rule=Host:motiontool.example.com"
-      - "traefik.backend=motion tool Antragsgrün"
+      - "traefik.backend=motion tool Antragsgruen"
       - "traefik.frontend.entryPoints=http,https"
       - "traefik.port=80"
       - "traefik.protocol=http"
@@ -25,39 +58,10 @@ services:
     volumes:
       - antragsgruen:/var/www/html
 
-  database:
-    image: mariadb:latest
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: "my-secret-pw"
-      MYSQL_DATABASE: antragsgruen
-    networks:
-      - internal
-    volumes:
-      - antragsgruen_db_c:/etc/mysql/conf.d/
-      - antragsgruen_db_d:/var/lib/mysql
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
-  traefik:
-    image: traefik
-    command: --api --docker
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8280:8080"
-    networks:
-      - proxy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /srv/traefik/traefik.toml:/traefik.toml
-      - /srv/traefik/acme.json:/acme.json
-    container_name: traefik
-
 networks:
   proxy:
     external: true
-  internal:
+  database:
     external: true
 
 volumes:

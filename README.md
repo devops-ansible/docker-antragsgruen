@@ -59,6 +59,8 @@ Visit [Træfik user guide](https://docs.traefik.io/user-guide/docker-and-lets-en
 
 ```sh
 mkdir -p /srv/traefik
+touch /srv/traefik/acme.json
+chmod 0600 /srv/traefik/acme.json
 cp files/traefik.toml /srv/traefik/traefik.toml
 vim /srv/traefik/traefik.toml
 ```
@@ -70,9 +72,11 @@ cp -rp docker-compose-traefik.yml my-docker-compose-traefik.yml
 vim my-docker-compose-traefik.yml
 ```
 
-Then you'll be prepared to run your containers:
+Then you'll be prepared to run your containers (since the Træfik setup needs to be network sensitive unless one wants to achieve unexpected behavior, the `database` and the `proxy` network have to be created manually):
 
 ```sh
+docker network create database
+docker network create proxy
 docker-compose -f my-docker-compose-traefik.yml up -d
 ```
 
