@@ -4,6 +4,16 @@
 ### What is this repository for? ###
 Within this Repo you will find the Dockerfile and the pipeline configuration to build a running container for the motion tool Antragsgrün.
 
+### How to manually build a docker image out of this repository? ###
+
+There might be situations when you cannot or you don't want to use precompiled Docker images – i.e. if you want to inject your personal adjustments. Therefor we recommend you to inspect the `Jenkinsfile` for the whole building routine – but the simplest call for building your own image would be the following one:
+
+```sh
+docker build --build-arg GITTAG=${VARIABLE_NAME} (...)
+```
+
+(Don't forget to edit the `Dockerfile`, if you've made some adjustments ... it'll check out the original code by default!)
+
 ### How do I get set up? ###
 
 First things first: **_NEVER_ run the `docker-compose.yml` or the `docker-compose-traefik.yml` without adjustments in production!** You need to adjust it to use your passwords, your domain(s) – even probably you need to define docker networks and other environment specific settings to get the tool running!
@@ -33,7 +43,7 @@ docker-compose -f my-docker-compose.yml up -d
 ```
 
 
-![docker-compose up -d](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=500&y=272&a=true&t=hjNHYoU764vyYpB)
+![docker-compose up -d](https://jugendpresse.cloud/s/hjNHYoU764vyYpB/download)
 
 If you've set your Antragsgrün up by `docker-compose.yml`, your container normally is called something like `antragsgruen_antragsgruen_1`.
 
@@ -45,7 +55,7 @@ $ docker logs -f antragsgruen_antragsgruen_1
 # [Fri Feb 09 10:00:00.000000 2018] [core:notice] [pid 1] AH00010: Command line: 'apache2 -D FOREGROUND'
 ```
 
-![docker logs -f antragsgruen_antragsgruen_1](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=1315&y=714&a=true&t=aojNWX6rQuTrjDp)
+![docker logs -f antragsgruen_antragsgruen_1](https://jugendpresse.cloud/s/aojNWX6rQuTrjDp/download)
 
 ##### Reach the Website #####
 
@@ -90,7 +100,7 @@ After the boot process of the main container (probably `antragsgruen_antragsgrue
 
 The Hostname of the database, you've created is the name of the Docker container of the database. If you used the `docker-compose.yml` file it will normally look like `antragsgruen_database_1`. Also given by `docker-compose.yml` you'll use the `root` user with the given password – please change it within the `docker-compose.yml` before you'll start your containers!
 
-![Database-Setup](https://jugendpresse.cloud/index.php/apps/files_sharing/ajax/publicpreview.php?x=1315&y=753&a=true&t=dWK8cjpFgK28WNl)
+![Database-Setup](https://jugendpresse.cloud/s/dWK8cjpFgK28WNl/download)
 
 ### Contribution guidelines ###
 
