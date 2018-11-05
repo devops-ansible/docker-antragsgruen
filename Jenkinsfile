@@ -18,7 +18,7 @@ node {
         checkout scm
         built_tags = readJSON file: 'built_tags.json'
         /* Clone current project */
-        sh 'git clone ' + gitrepository + ' --branch ' + gitbranch ' --single-branch ' + 'app/'
+        sh 'git clone ' + gitrepository + ' --branch ' + gitbranch + ' --single-branch ' + 'app/'
         build_tags = sh(
                 script: 'cd app && git tag --contains eaf83c00 && cd ..',
                 returnStdout: true
@@ -30,6 +30,10 @@ node {
         //     sh '....'
         // }
         sh 'echo "given tag: ' + build_tags[i] + '"'
+    }
+
+    stage('clean up') {
+        sh 'rm -rf app/'
     }
     //
     // def version = 'latest'
