@@ -37,7 +37,7 @@ node {
             git_push = true
 
             def now = new Date()
-            built_tags[build_tags[i]] = now.format("yy-MM-dd HH:mm:ss", TimeZone.getTimeZone('Europe/Berlin'))
+            built_tags[build_tags[i]] = now.format("yyyy-MM-dd HH:mm:ss", TimeZone.getTimeZone('Europe/Berlin'))
         }
         // stage("Test ${tests[i]}") {
         //     sh '....'
@@ -53,8 +53,8 @@ node {
                     'git config user.name Jenkins && ' +
                     'git config user.email server@jugendpresse.de && ' +
                     'git add built_tags.json && ' +
-                    'git commit -m "Jenkins: automated build from' + built_tags[build_tags[ build_tags.length - 1 ]] + '" &&' +
-                    'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@' + repo + ' master | true'
+                    'git commit -m "Jenkins: automated build from ' + built_tags[build_tags[ build_tags.length - 1 ]] + '" &&' +
+                    'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@' + repo
                 )
             }
         }
