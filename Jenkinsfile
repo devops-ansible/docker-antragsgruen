@@ -37,7 +37,7 @@ node {
             git_push = true
 
             def now = new Date()
-            built_tags[build_tags[i]] = now.format("YY-MM-dd HH:mm:ss", TimeZone.getTimeZone('Europe/Berlin'))
+            built_tags[build_tags[i]] = now.format("yy-MM-dd HH:mm:ss", TimeZone.getTimeZone('Europe/Berlin'))
         }
         // stage("Test ${tests[i]}") {
         //     sh '....'
@@ -49,7 +49,7 @@ node {
         if (git_push) {
             writeJSON file: 'built_tags.json', json: built_tags, pretty: 4
             withCredentials([usernamePassword(credentialsId: 'jpdtechnicaluser', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                sh('git add built_tags.json && git push https://${GIT_USERNAME}:${GIT_PASSWORD}@' + repo + ' master | true')
+                sh('git add built_tags.json && git commit -m "Jenkins: automated build from' + built_tags[build_tags[ build_tags.length - 1 ]] + '" && git push https://${GIT_USERNAME}:${GIT_PASSWORD}@' + repo + ' master | true')
             }
         }
     }
