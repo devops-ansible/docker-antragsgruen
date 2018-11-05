@@ -10,12 +10,13 @@ node {
     def gitbranch     = 'master'
     def begin_commit  = 'eaf83c00'
 
-    def built_tags = readJSON file: 'built_tags.json'
+    def built_tags = []
     def build_tags = []
 
     stage('GIT preparation') {
         /* Clone current Dockerfile & Jenkinsfile repository */
         checkout scm
+        built_tags = readJSON file: 'built_tags.json'
         /* Clone current project */
         sh 'git clone ' + gitrepository + ' --branch ' + gitbranch ' --single-branch ' + 'app/'
         build_tags = sh(
