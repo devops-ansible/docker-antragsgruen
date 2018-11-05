@@ -9,10 +9,12 @@ Within this Repo you will find the Dockerfile and the pipeline configuration to 
 There might be situations when you cannot or you don't want to use precompiled Docker images – i.e. if you want to inject your personal adjustments. Therefor we recommend you to inspect the `Jenkinsfile` for the whole building routine – but the simplest call for building your own image would be the following one:
 
 ```sh
-docker build --build-arg GITTAG=${VARIABLE_NAME} (...)
+docker build \
+   --build-arg GITREPO='https://github.com/CatoTH/antragsgruen.git' \
+   --build-arg GITBRANCH='master' \
+   --build-arg GITTAG='v3.8.0' \
+   ./
 ```
-
-(Don't forget to edit the `Dockerfile`, if you've made some adjustments ... it'll check out the original code by default!)
 
 ### How do I get set up? ###
 
@@ -127,3 +129,7 @@ If you are running Antragsgrün behind a reverse proxy like Træfik (the `docker
 ### installed tools ###
 
 See base repository: https://github.com/jugendpresse/apache
+
+### build history ###
+
+The official GitHub-Repository of the motion tool is not linked to this Docker image – so the automated build is now done by the Jenkins instance of Jugendpresse once a week based on (new) Tags within the git repo. For not rebuilding tags, the build date is stored for every tag within the `build_tags.json` file.

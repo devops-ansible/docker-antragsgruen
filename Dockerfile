@@ -19,7 +19,9 @@ RUN apt-get -yq upgrade
 
 RUN apt-get -yq install -y --no-install-recommends \
         g++ \
-        texlive texlive-latex-extra texlive-generic-extra
+        texlive texlive-latex-extra texlive-generic-extra \
+        texlive-lang-german texlive-latex-base texlive-latex-recommended \
+        texlive-humanities texlive-fonts-recommended texlive-xetex poppler-utils
 
 RUN apt-get clean && \
     apt-get autoclean && \
@@ -27,10 +29,7 @@ RUN apt-get clean && \
 RUN rm -r /var/lib/apt/lists/*
 
 # clone current git repo of Antragsgrün
-ARG GITTAG
-ARG GITBRANCH
-RUN git clone https://github.com/CatoTH/antragsgruen.git --branch $(echo ${GITBRANCH:-master}) ./ && \
-    git checkout $(echo ${GITTAG:-master})
+COPY app/ $APACHE_WORKDIR
 
 # declare volume for usage with docker volumes
 VOLUME ["$APACHE_WORKDIR"]
