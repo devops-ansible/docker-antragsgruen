@@ -12,28 +12,46 @@ node {
 
     def built_tags = []
     def build_tags = []
+    def repo       = ''
+    def git_push   = false
 
     stage('GIT preparation') {
         /* Clone current Dockerfile & Jenkinsfile repository */
-        checkout scm
+        def scmVar = checkout scm
+        repo = scmVar.GIT_URL
+        repo = repo.replaceAll(~/https:\/\//, "")
         built_tags = readJSON file: 'built_tags.json'
         /* Clone current project */
         sh 'git clone ' + gitrepository + ' --branch ' + gitbranch + ' --single-branch ' + 'app/'
         build_tags = sh(
-                script: 'cd app && git tag --contains eaf83c00 && cd ..',
+                script: 'cd app && git tag --contains ' + begin_commit + ' && cd ..',
                 returnStdout: true
             ).split('\n')
     }
 
     for (int i = 0; i < build_tags.length; i++) {
+        if (built_tags[build_tags[i]]) {
+            // Already exists – do nothing at the moment
+        }
+        else {
+            git_push = true
+
+            def now = new Date()
+            built_tags[build_tags[i]] = now.format("YY-MM-dd HH:mm:ss", TimeZone.getTimeZone('Europe/Berlin'))
+        }
         // stage("Test ${tests[i]}") {
         //     sh '....'
         // }
-        sh 'echo "given tag: ' + build_tags[i] + '"'
     }
 
     stage('clean up') {
         sh 'rm -rf app/'
+        if (git_push) {
+            writeJSON file: 'built_tags.json', json: built_tags, pretty: 4
+            withCredentials([usernamePassword(credentialsId: 'jpdtechnicaluser', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                sh('git add built_tags.json && git push https://${GIT_USERNAME}:${GIT_PASSWORD}@' + repo + ' master | true')
+            }
+        }
     }
     //
     // def version = 'latest'
