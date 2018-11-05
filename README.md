@@ -4,16 +4,6 @@
 ### What is this repository for? ###
 Within this Repo you will find the Dockerfile and the pipeline configuration to build a running container for the motion tool Antragsgrün.
 
-### How to manually build a docker image out of this repository? ###
-
-There might be situations when you cannot or you don't want to use precompiled Docker images – i.e. if you want to inject your personal adjustments. Therefor we recommend you to inspect the `Jenkinsfile` for the whole building routine – but the simplest call for building your own image would be the following one:
-
-```sh
-docker build --build-arg GITTAG=${VARIABLE_NAME} (...)
-```
-
-(Don't forget to edit the `Dockerfile`, if you've made some adjustments ... it'll check out the original code by default!)
-
 ### How do I get set up? ###
 
 First things first: **_NEVER_ run the `docker-compose.yml` or the `docker-compose-traefik.yml` without adjustments in production!** You need to adjust it to use your passwords, your domain(s) – even probably you need to define docker networks and other environment specific settings to get the tool running!
@@ -127,3 +117,7 @@ If you are running Antragsgrün behind a reverse proxy like Træfik (the `docker
 ### installed tools ###
 
 See base repository: https://github.com/jugendpresse/apache
+
+### build history ###
+
+The official GitHub-Repository of the motion tool is not linked to this Docker image – so the automated build is now done by the Jenkins instance of Jugendpresse once a week based on (new) Tags within the git repo. For not rebuilding tags, the build date is stored for every tag within the `build_tags.json` file.
