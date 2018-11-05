@@ -49,7 +49,13 @@ node {
         if (git_push) {
             writeJSON file: 'built_tags.json', json: built_tags, pretty: 4
             withCredentials([usernamePassword(credentialsId: 'jpdtechnicaluser', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                sh('git add built_tags.json && git commit -m "Jenkins: automated build from' + built_tags[build_tags[ build_tags.length - 1 ]] + '" && git push https://${GIT_USERNAME}:${GIT_PASSWORD}@' + repo + ' master | true')
+                sh(
+                    'git config user.name Jenkins && ' +
+                    'git config user.email server@jugendpresse.de && ' +
+                    'git add built_tags.json && ' +
+                    'git commit -m "Jenkins: automated build from' + built_tags[build_tags[ build_tags.length - 1 ]] + '" &&' +
+                    'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@' + repo + ' master | true'
+                )
             }
         }
     }
