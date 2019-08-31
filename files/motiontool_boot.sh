@@ -3,7 +3,7 @@
 ###
 
 cd $APACHE_WORKDIR
-sudo -u $WORKINGUSER composer global require "fxp/composer-asset-plugin:1.3.1"
+sudo -u $WORKINGUSER composer global require fxp/composer-asset-plugin hirak/prestissimo
 sudo -u $WORKINGUSER composer install --prefer-dist
 sudo -u $WORKINGUSER npm install
 sudo -u $WORKINGUSER npm run build
