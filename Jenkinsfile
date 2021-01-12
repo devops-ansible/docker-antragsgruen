@@ -2,7 +2,7 @@ node {
 
     def built_image
 
-    def baseimage = 'jugendpresse/apache:php-7.2'
+    def baseimage = 'jugendpresse/apache'
 
     def image = 'jugendpresse/docker-antragsgruen'
 
@@ -35,7 +35,7 @@ node {
         /* Clone current project */
         sh 'rm -rf app && git clone ' + gitrepository + ' --branch ' + gitbranch + ' --single-branch app/'
         build_tags = sh(
-                script: 'cd app && git tag --contains ' + begin_commit + ' && cd ..',
+                script: 'cd app && git fetch --tags && git tag --contains ' + begin_commit + ' && cd ..',
                 returnStdout: true
             ).split('\n')
     }
@@ -47,8 +47,11 @@ node {
             vtag = ''
             if (built_tags[build_tags[i]]) {
                 // Already exists – do nothing at the moment
+                // echo "Tag " + build_tags[i] + " already built on " + built_tags[build_tags[i]]
             }
             else {
+                echo "Tag " + build_tags[i] + " to be built now."
+
                 scm_push = true
 
                 sh 'cd app && git checkout ' + build_tags[i] + ' && mv .git ../app.git && cd ..'

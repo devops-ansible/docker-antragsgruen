@@ -13,24 +13,21 @@ EXPOSE 443
 WORKDIR $APACHE_WORKDIR
 
 COPY files/motiontool_boot.sh /boot.d/motiontool.sh
+COPY files/latex_state.php /latex.php
 
 # install applets and services
-RUN apt-get update -q --fix-missing
-RUN apt-get -yq upgrade
-
-RUN apt-get -yq install -y --no-install-recommends \
+RUN apt-get update -q --fix-missing && \
+    apt-get -yq upgrade && \
+    apt-get -yq install -y --no-install-recommends \
         g++ \
         texlive texlive-latex-extra texlive-generic-extra \
         texlive-lang-german texlive-latex-base texlive-latex-recommended \
-        texlive-humanities texlive-fonts-recommended texlive-xetex poppler-utils
-
-RUN apt-get clean && \
+        texlive-humanities texlive-fonts-recommended texlive-xetex poppler-utils && \
+    apt-get clean && \
     apt-get autoclean && \
-    apt-get autoremove
-RUN rm -r /var/lib/apt/lists/*
-
-COPY files/latex_state.php /latex.php
-RUN chmod a+x /latex.php
+    apt-get autoremove && \
+    rm -r /var/lib/apt/lists/* && \
+    chmod a+x /latex.php
 
 # clone current git repo of Antragsgrün
 COPY app/ $APACHE_WORKDIR
