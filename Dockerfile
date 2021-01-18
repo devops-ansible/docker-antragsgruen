@@ -27,7 +27,17 @@ RUN apt-get update -q --fix-missing && \
     apt-get autoclean && \
     apt-get autoremove && \
     rm -r /var/lib/apt/lists/* && \
-    chmod a+x /latex.php
+    chmod a+x /latex.php && \
+    docker-php-ext-install bcmath && \
+    docker-php-ext-install intl && \
+    docker-php-ext-install calendar && \
+    docker-php-ext-install imap && \
+    docker-php-ext-install mysqli && \
+    docker-php-ext-install pdo_mysql && \
+    docker-php-ext-install pdo_pgsql && \
+    docker-php-ext-install sodium && \
+    docker-php-ext-install zip
+
 
 # clone current git repo of Antragsgrün
 COPY app/ $APACHE_WORKDIR
