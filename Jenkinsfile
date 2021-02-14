@@ -2,7 +2,7 @@ node {
 
     def built_image
 
-    def baseimage = 'jugendpresse/apache'
+    def baseimage = 'devopsansiblede/apache'
 
     def image = 'jugendpresse/docker-antragsgruen'
 

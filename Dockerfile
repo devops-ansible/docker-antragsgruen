@@ -1,4 +1,4 @@
-FROM jugendpresse/apache:latest
+FROM devopsansiblede/apache:latest
 MAINTAINER Martin Winter
 
 # environmental variables
