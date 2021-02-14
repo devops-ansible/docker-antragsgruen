@@ -1,4 +1,5 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
+
 <?php
 
 $toolpath = $argv[1];
