@@ -1,5 +1,5 @@
-FROM devopsansiblede/apache:latest
-MAINTAINER Martin Winter
+FROM devopsansiblede/apache:php8
+MAINTAINER Martin Winter <dev@winter-martin.de>
 
 # environmental variables
 ENV APACHE_PUBLIC_DIR $APACHE_WORKDIR/web

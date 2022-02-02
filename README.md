@@ -20,7 +20,7 @@ cp -rp docker-compose.yml my-docker-compose.yml
 vim my-docker-compose.yml
 ```
 
-Deploying the original `docker-compose.yml` works by running the following command – don't forget to adjust your settings within this file:
+Deploying the original `docker-compose.yml` works by running the following command – don't forget to adjust your settings within this file:
 
 ```sh
 docker-compose up -d
@@ -116,7 +116,7 @@ If you are running Antragsgrün behind a reverse proxy like Træfik (the `docker
 
 ### installed tools ###
 
-See base repository: https://github.com/jugendpresse/apache
+See [base repository](https://github.com/devops-ansible/apache).
 
 ### build history ###
 

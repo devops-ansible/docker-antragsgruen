@@ -1,0 +1,235 @@
+---
+
+name: "Build Docker images for Antragsgrün"
+
+on:
+  workflow_dispatch:
+  push:
+  schedule:
+    - cron: '11 23 * * 0'
+
+jobs:
+
+  get_tags_to_build:
+
+    runs-on: "ubuntu-latest"
+    outputs:
+      tags:   "${{ steps.antragsgruen_tags.outputs.tags }}"
+      latest: "${{ steps.antragsgruen_tags.outputs.retagging }}"
+
+    steps:
+
+      - name: "Checkout this repository"
+        uses: "actions/checkout@v2"
+        with:
+          ref: "${{ inputs.username }}"
+          path: "docker"
+
+      - name: "Checkout CatoTH Antragsgruen"
+        uses: "actions/checkout@v2"
+        with:
+          repository: "CatoTH/antragsgruen"
+          ref: "master"
+          path: "docker/app"
+
+      - name: "prepare tags"
+        run: |
+          cd ./docker/app
+          git fetch --all --tags
+
+      - name: "get actual app tags"
+        id: "antragsgruen_tags"
+        # jq -c '{ "tags": map({"tag": .}) }'
+        run: |
+          frst_cmmt_rflctd="eaf83c00"
+          tags_reflected=$( cd ./docker/app && git tag --contains "${frst_cmmt_rflctd}" )
+          # get latest version
+          versionTags=$( echo "${tags_reflected}" | sed -E '/^v[0-9]+\.[0-9]+\.[0-9]+$/!d' | sort | uniq )
+          latest="$( echo "${versionTags}" | tail -n 1 )"
+          # get all tags to build
+          tags_json="$( echo $(
+              jq --raw-input --slurp 'split("\n") | .[0:-1] | { "all" : . }' <<< $( echo "${tags_reflected}" )
+          ) |
+          jq --argjson builtJson "$(
+              cat ./docker/built_tags.json |
+              jq 'keys | { "built": . }'
+          )" '. + $builtJson' |
+          jq '. as $d | .all | del( .[ indices($d.built[])[] ] )' |
+          jq --arg latest "${latest}" '. + [ $latest ]' |
+          jq -c '{ "tags": . | unique }'
+          )"
+          # get all tags that should be retagged
+          version_retagging=$(
+              jq --null-input --arg latest "${latest}" '{ "latest": $latest }'
+          )
+          v2=$( echo "${versionTags}" | sed -E 's/^(v[0-9]+\.[0-9]+)\.[0-9]+$/\1/g' | uniq )
+          IFS=$'\n'
+          for v in ${v2}; do
+              vv=$( echo "${versionTags}" | grep "${v}" | tail -n 1 )
+              if [ ! -z "${vv}" ]; then
+                  version_retagging=$(
+                      echo "${version_retagging}" |
+                      jq --arg key "${v}" --arg val "${vv}" '.[$key] = $val'
+                  )
+              fi
+          done
+          v1=$( echo "${versionTags}" | sed -E 's/^(v[0-9]+)\.[0-9]+\.[0-9]+$/\1/g' | uniq )
+          for v in ${v1}; do
+              vv=$( echo "${versionTags}" | grep "${v}" | tail -n 1 )
+              if [ ! -z "${vv}" ]; then
+                  version_retagging=$(
+                      echo "${version_retagging}" |
+                      jq --arg key "${v}" --arg val "${vv}" '.[$key] = $val'
+                  )
+              fi
+          done
+          version_retagging=$( echo "${version_retagging}" | jq -c '.' )
+          # print debugging information to log
+          echo "Tags being build:"
+          echo "${tags_json}"
+          echo
+          echo "Tags potentially being retagged:"
+          echo "${version_retagging}"
+          # use github workflow output to transfer information
+          echo "::set-output name=retagging::${version_retagging}"
+          echo "::set-output name=tags::${tags_json}"
+
+      - name: "Set up QEMU"
+        uses: "docker/setup-qemu-action@v1"
+
+      - name: "Set up Docker Buildx"
+        uses: "docker/setup-buildx-action@v1"
+
+      - name: "Build and push development"
+        id: "docker_build"
+        uses: "docker/build-push-action@v2"
+        with:
+          push: true
+          tags: "jugendpresse/docker-antragsgruen:development"
+          no-cache: true
+          context: "./docker/"
+          file: "./docker/Dockerfile"
+          platforms:
+            - "linux/amd64"
+            - "linux/arm64"
+
+      - name: "Push image as dated dev image"
+        run: |
+          dt=$( date '+%Y%m%d-%H%M' )
+          docker tag  "jugendpresse/docker-antragsgruen:development" "jugendpresse/docker-antragsgruen:dev_${dt}"
+          docker push "jugendpresse/docker-antragsgruen:dev_${dt}"
+
+
+  build_missing_images:
+
+    needs: "get_tags_to_build"
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: true
+      matrix: "${{ fromJSON( needs.get_tags_to_build.outputs.tags ) }}"
+
+    steps:
+
+      - name: "Login to DockerHub"
+        uses: "docker/login-action@v1"
+        with:
+          username: "${{ secrets.DOCKERHUB_USER }}"
+          password: "${{ secrets.DOCKERHUB_TOKEN }}"
+
+      - name: "Checkout this repository"
+        uses: "actions/checkout@v2"
+        with:
+          ref: "master"
+          path: "docker"
+
+      - name: "Checkout CatoTH Antragsgruen"
+        uses: "actions/checkout@v2"
+        with:
+          repository: "CatoTH/antragsgruen"
+          ref: "${{ matrix.tags }}"
+          path: "docker/app"
+
+      - name: "Set up QEMU"
+        uses: "docker/setup-qemu-action@v1"
+
+      - name: "Set up Docker Buildx"
+        uses: "docker/setup-buildx-action@v1"
+
+      - name: "Build and push ${{ matrix.tags }}"
+        id: "docker_build"
+        uses: "docker/build-push-action@v2"
+        with:
+          push: true
+          tags: "jugendpresse/docker-antragsgruen:${{ matrix.tags }}"
+          no-cache: true
+          context: "./docker/"
+          file: "./docker/Dockerfile"
+          platforms:
+            - "linux/amd64"
+            - "linux/arm64"
+
+      - name: "Re-Tag if tag has alternative tags"
+        run: |
+          # fetch all alternative tags
+          alternativeTags=$(
+            echo "${version_retagging}" |
+            jq 'keys[] as $k | if ( .[$k] == "${{ matrix.tags }}" ) then [ $k ] else   empty end' |
+            jq -s add
+          )
+          if [[ $( echo "${alternativeTags}" | jq 'length' ) -gt 0 ]]; then
+            echo "Tag “${{ matrix.tags }}” will also be pushed as those tags:"
+            alternativeTags=$(
+              echo "${alternativeTags}" |
+              jq -r '.[]'
+            )
+            IFS=$'\n'
+            for tag in $( echo "${alternativeTags}" ); do
+              echo "  ◆ ${tag}"
+              docker tag "jugendpresse/docker-antragsgruen:${{ matrix.tags }}" "jugendpresse/docker-antragsgruen:${tag}"
+              docker push "jugendpresse/docker-antragsgruen:${tag}"
+            done
+          else
+            echo 'No alternative tags to push for tag “${{ matrix.tags }}”'
+          fi
+
+
+  documentation:
+
+    needs:
+      - "get_tags_to_build"
+      - "build_missing_images"
+    runs-on: "ubuntu-latest"
+
+    steps:
+
+      - name: "Login to DockerHub"
+        uses: "docker/login-action@v1"
+        with:
+          username: "${{ secrets.DOCKERHUB_USER }}"
+          password: "${{ secrets.DOCKERHUB_TOKEN }}"
+
+      - name: "Checkout this repository"
+        uses: "actions/checkout@v2"
+        with:
+          ref: "master"
+          path: "docker"
+
+      - name: "Add build date to JSON"
+        run: |
+          dt=$( date '+%Y-%m-%d %H:%M (%Z)' )
+          tagList=$( echo "${{ needs.get_tags_to_build.outputs.tags }}" | jq -r '.tags[]' )
+          fileName="./docker/built_tags_2.json"
+          IFS=$'\n'
+          for tag in $( echo "${tagList}" ); do
+            echo "$( cat "${fileName}" | jq -S --arg key "${tag}" --arg val "${dt}" '.[ $key ] = $val' )" > "${fileName}"
+          done
+
+      - name: "Commit last built information"
+        uses: "stefanzweifel/git-auto-commit-action@v4"
+        with:
+          commit_message:    "Last built tags"
+          commit_user_name:  "GitHub Actions"
+          commit_user_email: "dev@winter-martin.de"
+          repository:        "./docker/"
+
+...
