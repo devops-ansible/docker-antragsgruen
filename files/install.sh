@@ -7,7 +7,8 @@ apt-get -yq install -y --no-install-recommends \
     texlive texlive-latex-extra texlive-generic-extra \
     texlive-lang-german texlive-latex-base texlive-latex-recommended \
     texlive-humanities texlive-fonts-recommended texlive-xetex \
-    poppler-utils
+    poppler-utils \
+    libsodium-dev
 
 apt-get clean
 apt-get autoclean

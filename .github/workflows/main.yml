@@ -29,7 +29,6 @@ jobs:
         uses: "actions/checkout@v2"
         with:
           repository: "CatoTH/antragsgruen"
-          ref: "master"
           path: "docker/app"
 
       - name: "prepare tags"
@@ -47,13 +46,15 @@ jobs:
           versionTags=$( echo "${tags_reflected}" | sed -E '/^v[0-9]+\.[0-9]+\.[0-9]+$/!d' | sort | uniq )
           latest="$( echo "${versionTags}" | tail -n 1 )"
           # get all tags to build
-          tags_json="$( echo $(
-              jq --raw-input --slurp 'split("\n") | .[0:-1] | { "all" : . }' <<< $( echo "${tags_reflected}" )
-          ) |
-          jq --argjson builtJson "$(
-              cat ./docker/built_tags.json |
-              jq 'keys | { "built": . }'
-          )" '. + $builtJson' |
+          built_tags="$(
+            cat ./docker/built_tags.json |
+            jq 'keys | { "built": . }'
+          )"
+          tags_json="$(
+            jq --raw-input --slurp 'split("\n") | .[0:-1] | { "all" : . }' <<< $( echo "${tags_reflected}" )
+          )"
+          tags_json="$( echo "${tags_json}" |
+          jq --argjson builtJson "${built_tags}" '. + $builtJson' |
           jq '. as $d | .all | del( .[ indices($d.built[])[] ] )' |
           jq --arg latest "${latest}" '. + [ $latest ]' |
           jq -c '{ "tags": . | unique }'
@@ -85,7 +86,7 @@ jobs:
           done
           version_retagging=$( echo "${version_retagging}" | jq -c '.' )
           # print debugging information to log
-          echo "Tags being build:"
+          echo "Tags being built:"
           echo "${tags_json}"
           echo
           echo "Tags potentially being retagged:"
@@ -93,6 +94,12 @@ jobs:
           # use github workflow output to transfer information
           echo "::set-output name=retagging::${version_retagging}"
           echo "::set-output name=tags::${tags_json}"
+
+      - name: "Login to DockerHub"
+        uses: "docker/login-action@v1"
+        with:
+          username: "${{ secrets.DOCKERHUB_USER }}"
+          password: "${{ secrets.DOCKERHUB_TOKEN }}"
 
       - name: "Set up QEMU"
         uses: "docker/setup-qemu-action@v1"
@@ -104,14 +111,13 @@ jobs:
         id: "docker_build"
         uses: "docker/build-push-action@v2"
         with:
+          load: true
           push: true
           tags: "jugendpresse/docker-antragsgruen:development"
           no-cache: true
           context: "./docker/"
           file: "./docker/Dockerfile"
-          platforms:
-            - "linux/amd64"
-            - "linux/arm64"
+          platforms: linux/amd64,linux/arm64
 
       - name: "Push image as dated dev image"
         run: |
@@ -159,14 +165,13 @@ jobs:
         id: "docker_build"
         uses: "docker/build-push-action@v2"
         with:
+          load: true
           push: true
           tags: "jugendpresse/docker-antragsgruen:${{ matrix.tags }}"
           no-cache: true
           context: "./docker/"
           file: "./docker/Dockerfile"
-          platforms:
-            - "linux/amd64"
-            - "linux/arm64"
+          platforms: linux/amd64,linux/arm64
 
       - name: "Re-Tag if tag has alternative tags"
         run: |
@@ -201,12 +206,6 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-
-      - name: "Login to DockerHub"
-        uses: "docker/login-action@v1"
-        with:
-          username: "${{ secrets.DOCKERHUB_USER }}"
-          password: "${{ secrets.DOCKERHUB_TOKEN }}"
 
       - name: "Checkout this repository"
         uses: "actions/checkout@v2"
