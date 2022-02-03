@@ -30,4 +30,10 @@ docker-php-ext-install pdo_pgsql
 docker-php-ext-install sodium
 docker-php-ext-install zip
 
+npm install --global npm@latest
+npm install --global gulp-cli
+
+cd "${APACHE_WORKDIR}"
+sudo -u "${WORKINGUSER}" install gulp -D
+
 rm -rf /DockerInstall
