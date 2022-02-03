@@ -8,14 +8,19 @@ on:
   schedule:
     - cron: '11 23 * * 0'
 
+env:
+  FIRST_COMMIT_REFLECTED: "eaf83c00"
+  REGISTRY_URL:           "docker.io/"
+  IMAGE_NAME:             "jugendpresse/docker-antragsgruen"
+
 jobs:
 
   get_tags_to_build:
 
     runs-on: "ubuntu-latest"
     outputs:
-      tags:   "${{ steps.antragsgruen_tags.outputs.tags }}"
-      latest: "${{ steps.antragsgruen_tags.outputs.retagging }}"
+      tags:      "${{ steps.antragsgruen_tags.outputs.tags }}"
+      retagging: "${{ steps.antragsgruen_tags.outputs.retagging }}"
 
     steps:
 
@@ -40,8 +45,7 @@ jobs:
         id: "antragsgruen_tags"
         # jq -c '{ "tags": map({"tag": .}) }'
         run: |
-          frst_cmmt_rflctd="eaf83c00"
-          tags_reflected=$( cd ./docker/app && git tag --contains "${frst_cmmt_rflctd}" )
+          tags_reflected=$( cd ./docker/app && git tag --contains "${{ env.FIRST_COMMIT_REFLECTED }}" )
           # get latest version
           versionTags=$( echo "${tags_reflected}" | sed -E '/^v[0-9]+\.[0-9]+\.[0-9]+$/!d' | sort | uniq )
           latest="$( echo "${versionTags}" | tail -n 1 )"
@@ -111,19 +115,29 @@ jobs:
         id: "docker_build"
         uses: "docker/build-push-action@v2"
         with:
-          load: true
           push: true
-          tags: "jugendpresse/docker-antragsgruen:development"
+          tags: "${{ env.IMAGE_NAME }}:development"
           no-cache: true
           context: "./docker/"
           file: "./docker/Dockerfile"
           platforms: linux/amd64,linux/arm64
 
-      - name: "Push image as dated dev image"
+      - name: "prepare alternative tags"
+        id: "dev_retag"
         run: |
           dt=$( date '+%Y%m%d-%H%M' )
-          docker tag  "jugendpresse/docker-antragsgruen:development" "jugendpresse/docker-antragsgruen:dev_${dt}"
-          docker push "jugendpresse/docker-antragsgruen:dev_${dt}"
+          retag=$(
+            echo "${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:dev_${dt}"
+          )
+          echo "${retag}"
+          echo "::set-output name=retag::${retag}"
+
+      - name: "Push image as dated dev image"
+        uses: "akhilerm/tag-push-action@v2.0.0"
+        with:
+          src: "${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:development"
+          dst: |
+            ${{ steps.dev_retag.outputs.retag }}
 
 
   build_missing_images:
@@ -165,22 +179,27 @@ jobs:
         id: "docker_build"
         uses: "docker/build-push-action@v2"
         with:
-          load: true
           push: true
-          tags: "jugendpresse/docker-antragsgruen:${{ matrix.tags }}"
+          tags: "${{ env.IMAGE_NAME }}:${{ matrix.tags }}"
           no-cache: true
           context: "./docker/"
           file: "./docker/Dockerfile"
           platforms: linux/amd64,linux/arm64
 
-      - name: "Re-Tag if tag has alternative tags"
+      - name: "prepare alternative tags if applicable"
+        id: "alt_tags"
+        # # GitHub workflow outputs need some string substitutions...
+        # MY_OUTPUT="${MY_STRING//'%'/'%25'}"
+        # MY_OUTPUT="${MY_STRING//$'\n'/'%0A'}"
+        # MY_OUTPUT="${MY_STRING//$'\r'/'%0D'}"
         run: |
           # fetch all alternative tags
           alternativeTags=$(
-            echo "${version_retagging}" |
+            echo '${{ needs.get_tags_to_build.outputs.retagging }}' |
             jq 'keys[] as $k | if ( .[$k] == "${{ matrix.tags }}" ) then [ $k ] else   empty end' |
             jq -s add
           )
+          retag=''
           if [[ $( echo "${alternativeTags}" | jq 'length' ) -gt 0 ]]; then
             echo "Tag “${{ matrix.tags }}” will also be pushed as those tags:"
             alternativeTags=$(
@@ -190,12 +209,24 @@ jobs:
             IFS=$'\n'
             for tag in $( echo "${alternativeTags}" ); do
               echo "  ◆ ${tag}"
-              docker tag "jugendpresse/docker-antragsgruen:${{ matrix.tags }}" "jugendpresse/docker-antragsgruen:${tag}"
-              docker push "jugendpresse/docker-antragsgruen:${tag}"
+              if [ -z "${retag}" ]; then
+                retag="{{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
+              else
+                retag="${retag}%0A${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
+              fi
             done
           else
             echo 'No alternative tags to push for tag “${{ matrix.tags }}”'
           fi
+          echo "::set-output name=retag::${retag}"
+
+      - name: "Push re-tagged images "
+        uses: "akhilerm/tag-push-action@v2.0.0"
+        with:
+          src: "${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${{ matrix.tags }}"
+          dst: |
+            ${{ steps.alt_tags.outputs.retag }}
+        if: "${{ steps.alt_tags.outputs.retag != '' }}"
 
 
   documentation:
