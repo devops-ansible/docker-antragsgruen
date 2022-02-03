@@ -11,6 +11,7 @@ sudo -u "${WORKINGUSER}" gulp
 
 if [ -s "${APACHE_WORKDIR}/config/config.json" ]; then
     
+    sudo -u "${WORKINGUSER}" "${APACHE_WORKDIR}/yii" cache/flush-all
     sudo -u "${WORKINGUSER}" printf "
     set timeout -1
     spawn \"${APACHE_WORKDIR}/yii\" migrate
