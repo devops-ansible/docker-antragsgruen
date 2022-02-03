@@ -210,7 +210,7 @@ jobs:
             for tag in $( echo "${alternativeTags}" ); do
               echo "  ◆ ${tag}"
               if [ -z "${retag}" ]; then
-                retag="{{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
+                retag="${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
               else
                 retag="${retag}%0A${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
               fi
