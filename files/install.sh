@@ -3,6 +3,10 @@
 apt-get update -q --fix-missing
 apt-get -yq upgrade
 
+apt-get -y remove nodejs
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+apt-get -yq install nodejs
+
 apt-get -yq install --no-install-recommends \
     g++ libsodium-dev \
     poppler-utils \
