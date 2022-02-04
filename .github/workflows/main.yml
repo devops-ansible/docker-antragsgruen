@@ -9,7 +9,7 @@ on:
     - cron: '11 23 * * 0'
 
 env:
-  FIRST_COMMIT_REFLECTED: "eaf83c00"
+  FIRST_COMMIT_REFLECTED: "a911b33a"
   REGISTRY_URL:           "docker.io/"
   IMAGE_NAME:             "jugendpresse/docker-antragsgruen"
 

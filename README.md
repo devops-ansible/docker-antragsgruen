@@ -120,4 +120,15 @@ See [base repository](https://github.com/devops-ansible/apache).
 
 ### build history ###
 
-The official GitHub-Repository of the motion tool is not linked to this Docker image – so the automated build is now done by the Jenkins instance of Jugendpresse once a week based on (new) Tags within the git repo. For not rebuilding tags, the build date is stored for every tag within the `build_tags.json` file.
+The [official GitHub-Repository](https://github.com/CatoTH/antragsgruen/) of the motion tool is not linked to this Git repository or the resulting Docker images!
+
+The automated build is done by GitHub workflow within this repository once a week based on (new) Tags within the [official Git Repository](https://github.com/CatoTH/antragsgruen/).
+
+The latest version of the motion tool is re-built every week, so that OS security updates are applied to that image on a regular basis.
+
+All (last) build dates for all Git tags are documented within the `build_tags.json` file.  
+If you maintain a fork of this repo and want to re-build a specific tag or multiple specific tags, you'll need to remove those from that JSON file. Ensure to not break the JSON syntax!
+
+### History of this repo ###
+
+The Docker image history goes back to `v3.7.0` ([commit `eaf83c00` of official motion tool repo](https://github.com/CatoTH/antragsgruen/commit/eaf83c00)). The images were built by a Jenkins pipeline until `v4.6.3`; from tag `v4.7.0` ([commit `a911b33a` of official motion tool repo](https://github.com/CatoTH/antragsgruen/commit/a911b33a9f77e717592eece90f41579c172e0a1a)), the build process changed into the GitHub workflow, which also uses the `build_tags.json` as a documentation file of builds.
