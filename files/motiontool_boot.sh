@@ -3,7 +3,9 @@
 ###
 
 cd "${APACHE_WORKDIR}"
-sudo -u "${WORKINGUSER}" composer global require "fxp/composer-asset-plugin:1.3.1"
+
+chown -R "${WORKINGUSER}" "${APACHE_WORKDIR}"
+
 sudo -u "${WORKINGUSER}" composer install --prefer-dist
 sudo -u "${WORKINGUSER}" npm install
 sudo -u "${WORKINGUSER}" npm run build
@@ -30,3 +32,5 @@ if [ -s "${APACHE_WORKDIR}/config/config.json" ]; then
 else
     sudo -u "${WORKINGUSER}" touch "${APACHE_WORKDIR}/config/INSTALLING"
 fi
+
+chown -R "${WORKINGUSER}" "${APACHE_WORKDIR}"
