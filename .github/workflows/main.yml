@@ -247,7 +247,7 @@ jobs:
       - name: "Add build date to JSON"
         run: |
           dt=$( date '+%Y-%m-%d %H:%M (%Z)' )
-          fileName="./docker/built_tags_2.json"
+          fileName="./docker/built_tags.json"
           tagList=$( echo '${{ needs.get_tags_to_build.outputs.tags }}' | jq -r '.tags[]' )
           IFS=$'\n'
           for tag in $( echo "${tagList}" ); do
