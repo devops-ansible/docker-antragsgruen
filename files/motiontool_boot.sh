@@ -9,7 +9,7 @@ chown -R "${WORKINGUSER}" "${APACHE_WORKDIR}"
 sudo -u "${WORKINGUSER}" composer install --prefer-dist
 sudo -u "${WORKINGUSER}" npm install
 sudo -u "${WORKINGUSER}" npm run build
-sudo -u "${WORKINGUSER}" gulp
+# sudo -u "${WORKINGUSER}" gulp
 
 if [ -s "${APACHE_WORKDIR}/config/config.json" ]; then
     
