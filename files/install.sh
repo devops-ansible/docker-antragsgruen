@@ -3,21 +3,12 @@
 apt-get update -q --fix-missing
 apt-get -yq upgrade
 
-apt-get -y remove nodejs
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-apt-get -yq install nodejs
-
 apt-get -yq install --no-install-recommends \
     g++ libsodium-dev \
     poppler-utils \
     texlive texlive-latex-extra texlive-pictures texlive-luatex \
     texlive-lang-german texlive-latex-base texlive-latex-recommended \
     texlive-humanities texlive-fonts-recommended texlive-xetex
-
-apt-get -yq install --no-install-recommends \
-    libpython2-stdlib libpython2.7-minimal python2.7-minimal python\
-    libpython2.7-stdlib python2 python2-minimal python2.7 \
-    build-essential libssl-dev libffi-dev python2.7-dev
 
 apt-get clean
 apt-get autoclean
