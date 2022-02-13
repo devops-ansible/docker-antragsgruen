@@ -5,8 +5,10 @@ name: "Build Docker images for Antragsgrün"
 on:
   workflow_dispatch:
   push:
+    branches:
+      - "master"
   schedule:
-    - cron: '11 23 * * 0'
+    - cron: "11 23 * * 0"
 
 env:
   FIRST_COMMIT_REFLECTED: "a911b33a"
