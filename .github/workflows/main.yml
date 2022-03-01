@@ -49,7 +49,7 @@ jobs:
         run: |
           tags_reflected=$( cd ./docker/app && git tag --contains "${{ env.FIRST_COMMIT_REFLECTED }}" )
           # get latest version
-          versionTags=$( echo "${tags_reflected}" | sed -E '/^v[0-9]+\.[0-9]+\.[0-9]+$/!d' | sort | uniq )
+          versionTags=$( echo "${tags_reflected}" | sed -E '/^v[0-9]+\.[0-9]+\.[0-9]+$/!d' | sort --version-sort --reverse | uniq )
           latest="$( echo "${versionTags}" | tail -n 1 )"
           # get all tags to build
           built_tags="$(
