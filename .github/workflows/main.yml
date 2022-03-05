@@ -101,6 +101,26 @@ jobs:
           echo "::set-output name=retagging::${version_retagging}"
           echo "::set-output name=tags::${tags_json}"
 
+
+  build_master_as_dev_image:
+
+    needs: "get_tags_to_build"
+    runs-on: "ubuntu-latest"
+
+    steps:
+
+      - name: "Checkout this repository"
+        uses: "actions/checkout@v2"
+        with:
+          ref: "${{ inputs.username }}"
+          path: "docker"
+
+      - name: "Checkout CatoTH Antragsgruen"
+        uses: "actions/checkout@v2"
+        with:
+          repository: "CatoTH/antragsgruen"
+          path: "docker/app"
+
       - name: "Login to DockerHub"
         uses: "docker/login-action@v1"
         with:
