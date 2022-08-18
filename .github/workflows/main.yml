@@ -50,8 +50,8 @@ jobs:
           tags_reflected=$( cd ./docker/app && git tag --contains "${{ env.FIRST_COMMIT_REFLECTED }}" )
           # get latest version
           versionTags=$( echo "${tags_reflected}" | sed -E '/^v?[0-9]+\.[0-9]+\.[0-9]+$/!d' | uniq )
-          latestVersion=$( echo "${versionTags}" | sed -E 's/^v?(.*)$/\1/g' | sort --version-sort | tail -n 1 )
-          latest=$( echo "${versionTags}" | grep "${latestVersion}" )
+          versionHelper=$( echo "${versionTags}" | sed -E 's/^v?(.*)$/\1/g' | sort --version-sort )
+          latest=$( echo "${versionTags}" | grep "$( echo "${versionHelper}" | tail -n 1 )" )
           # get all tags to build
           built_tags="$(
             cat ./docker/built_tags.json |
@@ -61,33 +61,33 @@ jobs:
             jq --raw-input --slurp 'split("\n") | .[0:-1] | { "all" : . }' <<< $( echo "${tags_reflected}" )
           )"
           tags_json="$( echo "${tags_json}" |
-          jq --argjson builtJson "${built_tags}" '. + $builtJson' |
-          jq '. as $d | .all | del( .[ indices($d.built[])[] ] )' |
-          jq --arg latest "${latest}" '. + [ $latest ]' |
-          jq -c '{ "tags": . | unique }'
+            jq --argjson builtJson "${built_tags}" '. + $builtJson' |
+            jq '. as $d | .all | del( .[ indices($d.built[])[] ] )' |
+            jq --arg latest "${latest}" '. + [ $latest ]' |
+            jq -c '{ "tags": . | unique }'
           )"
           # get all tags that should be retagged
           version_retagging=$(
               jq --null-input --arg latest "${latest}" '{ "latest": $latest }'
           )
-          v2=$( echo "${versionTags}" | sed -E 's/^(v?[0-9]+\.[0-9]+)\.[0-9]+$/\1/g' | uniq )
+          v2=$( echo "${versionHelper}" | sed -E 's/^v?([0-9]+\.[0-9]+)\.[0-9]+$/\1/g' | uniq )
           IFS=$'\n'
           for v in ${v2}; do
-              vv=$( echo "${versionTags}" | grep "${v}" | tail -n 1 )
+              vv=$( echo "${versionHelper}" | grep "${v}" | tail -n 1 )
               if [ ! -z "${vv}" ]; then
                   version_retagging=$(
                       echo "${version_retagging}" |
-                      jq --arg key "${v}" --arg val "${vv}" '.[$key] = $val'
+                      jq --arg key "v${v}" --arg val "$( echo "${versionTags}" | grep "${vv}" )" '.[$key] = $val'
                   )
               fi
           done
-          v1=$( echo "${versionTags}" | sed -E 's/^(v?[0-9]+)\.[0-9]+\.[0-9]+$/\1/g' | uniq )
+          v1=$( echo "${versionHelper}" | sed -E 's/^v?([0-9]+)\.[0-9]+\.[0-9]+$/\1/g' | uniq )
           for v in ${v1}; do
-              vv=$( echo "${versionTags}" | grep "${v}" | tail -n 1 )
+              vv=$( echo "${versionHelper}" | grep "${v}" | tail -n 1 )
               if [ ! -z "${vv}" ]; then
                   version_retagging=$(
                       echo "${version_retagging}" |
-                      jq --arg key "${v}" --arg val "${vv}" '.[$key] = $val'
+                      jq --arg key "v${v}" --arg val "$( echo "${versionTags}" | grep "${vv}" )" '.[$key] = $val'
                   )
               fi
           done
