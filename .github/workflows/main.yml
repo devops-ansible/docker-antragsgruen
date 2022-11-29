@@ -27,13 +27,13 @@ jobs:
     steps:
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           ref: "${{ inputs.username }}"
           path: "docker"
 
       - name: "Checkout CatoTH Antragsgruen"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           repository: "CatoTH/antragsgruen"
           path: "docker/app"
@@ -111,32 +111,32 @@ jobs:
     steps:
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           ref: "${{ inputs.username }}"
           path: "docker"
 
       - name: "Checkout CatoTH Antragsgruen"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           repository: "CatoTH/antragsgruen"
           path: "docker/app"
 
       - name: "Login to DockerHub"
-        uses: "docker/login-action@v1"
+        uses: "docker/login-action@v2"
         with:
           username: "${{ secrets.DOCKERHUB_USER }}"
           password: "${{ secrets.DOCKERHUB_TOKEN }}"
 
       - name: "Set up QEMU"
-        uses: "docker/setup-qemu-action@v1"
+        uses: "docker/setup-qemu-action@v2"
 
       - name: "Set up Docker Buildx"
-        uses: "docker/setup-buildx-action@v1"
+        uses: "docker/setup-buildx-action@v2"
 
       - name: "Build and push development"
         id: "docker_build"
-        uses: "docker/build-push-action@v2"
+        uses: "docker/build-push-action@v3"
         with:
           push: true
           tags: "${{ env.IMAGE_NAME }}:development"
@@ -156,7 +156,7 @@ jobs:
           echo "::set-output name=retag::${retag}"
 
       - name: "Push image as dated dev image"
-        uses: "akhilerm/tag-push-action@v2.0.0"
+        uses: "akhilerm/tag-push-action@v2.1.0"
         with:
           src: "${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:development"
           dst: |
@@ -174,33 +174,33 @@ jobs:
     steps:
 
       - name: "Login to DockerHub"
-        uses: "docker/login-action@v1"
+        uses: "docker/login-action@v2"
         with:
           username: "${{ secrets.DOCKERHUB_USER }}"
           password: "${{ secrets.DOCKERHUB_TOKEN }}"
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           ref: "master"
           path: "docker"
 
       - name: "Checkout CatoTH Antragsgruen"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           repository: "CatoTH/antragsgruen"
           ref: "${{ matrix.tags }}"
           path: "docker/app"
 
       - name: "Set up QEMU"
-        uses: "docker/setup-qemu-action@v1"
+        uses: "docker/setup-qemu-action@v2"
 
       - name: "Set up Docker Buildx"
-        uses: "docker/setup-buildx-action@v1"
+        uses: "docker/setup-buildx-action@v2"
 
       - name: "Build and push ${{ matrix.tags }}"
         id: "docker_build"
-        uses: "docker/build-push-action@v2"
+        uses: "docker/build-push-action@v3"
         with:
           push: true
           tags: "${{ env.IMAGE_NAME }}:${{ matrix.tags }}"
@@ -244,7 +244,7 @@ jobs:
           echo "::set-output name=retag::${retag}"
 
       - name: "Push re-tagged images "
-        uses: "akhilerm/tag-push-action@v2.0.0"
+        uses: "akhilerm/tag-push-action@v2.1.0"
         with:
           src: "${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${{ matrix.tags }}"
           dst: |
@@ -262,7 +262,7 @@ jobs:
     steps:
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           ref: "master"
           path: "docker"
