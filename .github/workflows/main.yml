@@ -211,10 +211,6 @@ jobs:
 
       - name: "prepare alternative tags if applicable"
         id: "alt_tags"
-        # # GitHub workflow outputs need some string substitutions...
-        # MY_OUTPUT="${MY_STRING//'%'/'%25'}"
-        # MY_OUTPUT="${MY_STRING//$'\n'/'%0A'}"
-        # MY_OUTPUT="${MY_STRING//$'\r'/'%0D'}"
         run: |
           # fetch all alternative tags
           alternativeTags=$(
@@ -235,7 +231,7 @@ jobs:
               if [ -z "${retag}" ]; then
                 retag="${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
               else
-                retag="${retag}%0A${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
+                retag="${retag}"$'\n'"${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:${tag}"
               fi
             done
           else
