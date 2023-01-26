@@ -99,8 +99,8 @@ jobs:
           echo "Tags potentially being retagged:"
           echo "${version_retagging}"
           # use github workflow output to transfer information
-          echo "::set-output name=retagging::${version_retagging}"
-          echo "::set-output name=tags::${tags_json}"
+          echo "retagging=${version_retagging}" >> $GITHUB_OUTPUT
+          echo "tags=${tags_json}" >> $GITHUB_OUTPUT
 
 
   build_master_as_dev_image:
@@ -153,7 +153,7 @@ jobs:
             echo "${{ env.REGISTRY_URL }}${{ env.IMAGE_NAME }}:dev_${dt}"
           )
           echo "${retag}"
-          echo "::set-output name=retag::${retag}"
+          echo "retag=${retag}" >> $GITHUB_OUTPUT
 
       - name: "Push image as dated dev image"
         uses: "akhilerm/tag-push-action@v2.1.0"
@@ -241,7 +241,7 @@ jobs:
           else
             echo 'No alternative tags to push for tag “${{ matrix.tags }}”'
           fi
-          echo "::set-output name=retag::${retag}"
+          echo "retag=${retag}" >> $GITHUB_OUTPUT
 
       - name: "Push re-tagged images "
         uses: "akhilerm/tag-push-action@v2.1.0"
