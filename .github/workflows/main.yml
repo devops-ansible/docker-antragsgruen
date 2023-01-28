@@ -237,7 +237,9 @@ jobs:
           else
             echo 'No alternative tags to push for tag “${{ matrix.tags }}”'
           fi
-          echo "retag=${retag}" >> $GITHUB_OUTPUT
+          echo 'retag<<EOD' >> $GITHUB_OUTPUT
+          echo "${retag}" >> $GITHUB_OUTPUT
+          echo 'EOD' >> $GITHUB_OUTPUT
 
       - name: "Push re-tagged images "
         uses: "akhilerm/tag-push-action@v2.1.0"
