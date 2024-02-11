@@ -8,12 +8,12 @@ on:
     branches:
       - "master"
   schedule:
-    - cron: "11 23 * * 0"
+    - cron: '11 3 * * 1'
 
 env:
   FIRST_COMMIT_REFLECTED: "a911b33a"
   REGISTRY_URL:           "docker.io/"
-  IMAGE_NAME:             "jugendpresse/docker-antragsgruen"
+  IMAGE_NAME:             "devopsansiblede/antragsgruen"
 
 jobs:
 
@@ -27,13 +27,13 @@ jobs:
     steps:
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           ref: "${{ inputs.username }}"
           path: "docker"
 
       - name: "Checkout CatoTH Antragsgruen"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           repository: "CatoTH/antragsgruen"
           path: "docker/app"
@@ -111,13 +111,13 @@ jobs:
     steps:
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           ref: "${{ inputs.username }}"
           path: "docker"
 
       - name: "Checkout CatoTH Antragsgruen"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           repository: "CatoTH/antragsgruen"
           path: "docker/app"
@@ -180,13 +180,13 @@ jobs:
           password: "${{ secrets.DOCKERHUB_TOKEN }}"
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           ref: "master"
           path: "docker"
 
       - name: "Checkout CatoTH Antragsgruen"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           repository: "CatoTH/antragsgruen"
           ref: "${{ matrix.tags }}"
@@ -260,7 +260,7 @@ jobs:
     steps:
 
       - name: "Checkout this repository"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           ref: "master"
           path: "docker"
