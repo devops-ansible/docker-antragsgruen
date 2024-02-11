@@ -6,10 +6,17 @@ cd "${APACHE_WORKDIR}"
 
 chown -R "${WORKINGUSER}" "${APACHE_WORKDIR}"
 
-sudo -u "${WORKINGUSER}" composer install --prefer-dist
-sudo -u "${WORKINGUSER}" npm install
-sudo -u "${WORKINGUSER}" npm run build
-# sudo -u "${WORKINGUSER}" gulp
+# only run `composer install` if `vendor` not present
+if [ ! -d "./vendor" ]; then
+    sudo -u "${WORKINGUSER}" composer install --prefer-dist
+fi
+
+# only run `npm` stuff if `node_modules` are not present
+if [ ! -d "./node_modules" ]; then
+    sudo -u "${WORKINGUSER}" npm install
+    sudo -u "${WORKINGUSER}" npm run build
+    # sudo -u "${WORKINGUSER}" gulp
+fi
 
 if [ -s "${APACHE_WORKDIR}/config/config.json" ]; then
     
