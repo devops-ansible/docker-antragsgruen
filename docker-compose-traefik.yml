@@ -36,7 +36,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   antragsgruen:
-    image: jugendpresse/docker-antragsgruen:latest
+    image: devopsansiblede/antragsgruen:latest
     restart: always
     networks:
       - proxy

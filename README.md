@@ -8,6 +8,8 @@ Within this Repo you will find the Dockerfile and the pipeline configuration to 
 
 First things first: **_NEVER_ run the `docker-compose.yml` or the `docker-compose-traefik.yml` without adjustments in production!** You need to adjust it to use your passwords, your domain(s) – even probably you need to define docker networks and other environment specific settings to get the tool running!
 
+You can also run motion.tools in K8s by adapting the information in the compose file(s) into Pod definitions. The basic information, you'd need, is the Docker image at `devopsansiblede/antragsgruen` published to [DockerHub](https://hub.docker.com/r/devopsansiblede/antragsgruen) by versions (e.g. `v4.14.2`, `v4.14`, `v4`), `latest` and some `dev.*` tags reflecting the current development head of the actual code repo of Antragsgrün.
+
 Since the docker principles tell you to only run one process within one container, the container provided within this repository, `jugendpresse/antragsgruen`, only provides the php application. You need to setup a MySQL container, too. The `docker-compose.yml` within this repo shows you, how you can set this up.
 
 If you want to reuse an existing database (container), you have to add a database and the credentials manually and remove the database service from `docker-compose.yml`.
