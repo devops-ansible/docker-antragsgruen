@@ -3,7 +3,7 @@ ARG BASEVERSION="php8"
 
 FROM ${BASEIMAGE}:${BASEVERSION}
 
-MAINTAINER Martin Winter <dev@winter-martin.de>
+LABEL org.opencontainers.image.authors="Martin <dev@macwinnie.me>"
 
 # environmental variables
 ENV APACHE_PUBLIC_DIR "${APACHE_WORKDIR}/web"
